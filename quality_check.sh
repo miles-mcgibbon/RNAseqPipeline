@@ -3,7 +3,6 @@ jobs=5
 unset count
 mkdir fastqc_output
 all_files=$(ls /localdisk/data/BPSM/AY21/fastq/*fq.gz| wc -l)
-echo -e "$all_files"
 (
 for file in $loop_dir*; do
         ((i=i%jobs)); ((i++==0)) && wait
