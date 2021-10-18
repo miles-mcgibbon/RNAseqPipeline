@@ -11,6 +11,6 @@ for file in $loop_dir*; do
 		count=$((count+1))
 		echo -e -n "\rProcessed $count of $all_files reads with fastqc..."
 	fi
-echo -e "\nFinished quality check of paired-end reads..."
 done
 )
+echo -e "\nFinished quality check of paired-end reads..."
