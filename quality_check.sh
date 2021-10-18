@@ -13,3 +13,4 @@ for file in $loop_dir*; do
 	fi
 echo -e "\nFinished quality check of paired-end reads..."
 done
+)
