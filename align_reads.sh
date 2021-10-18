@@ -20,4 +20,4 @@ while read ID Sample Replicate Time Treatment End1 End2; do
 		echo -e -n "\rAligned $count of $info_file_lines sample paired-end reads..." 
 	fi
 done < "$info_file"
-echo -e "\nFinished alignment of all sample reads to reference genome!"	
+echo -e "\nFinished alignment of all sample reads to reference genome..."	
