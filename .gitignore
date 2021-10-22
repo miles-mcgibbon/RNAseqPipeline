@@ -5,3 +5,5 @@
 *.bam
 *.txt
 *.tsv
+*.bam
+*.bai
