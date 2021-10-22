@@ -41,21 +41,21 @@ bowtie_sams="$(pwd)/bowtie_alignments/"
 sample_files=()
 
 for file in $bowtie_sams*; do
-    sample_files+=("$file")
+    	filename="$(basename $file)"
+	filename="${filename//.sam/}"
+	sample_files+=("$filename")
 done
 for file in "${sample_files[@]}"; do
-        filename="$(basename $file)"
-	echo -e "$filename"
-        echo -e -n "\t$filename" >> fold_data_with_headers.tsv
+	echo -e "$file"
+        echo -e -n "\t$file" >> fold_data_with_headers.tsv
 done
-echo -e "\tMean" >> fold_data_with_headers.tsv
+echo -e -n "\tMean" >> fold_data_with_headers.tsv
 for file in "${sample_files[@]}"; do
-        filename="$(basename $file)"
-        suffix="$_fold_change_from_mean"
-	echo -e "$filename$suffix"
-        echo -e -n "\t$filename$suffix" >> fold_data_with_headers.tsv
+        suffix="_fold_change_from_mean"
+	echo -e "$file$suffix"
+        echo -e -n "\t$file$suffix" >> fold_data_with_headers.tsv
 done
-echo -e "\n" >> fold_data_with_headers.tsv
-read -n 1 -p "Input Selection:" "mainmenuinput"
+ echo -e -n "\n" >> fold_data_with_headers.tsv
+# read -n 1 -p "Input Selection:" "mainmenuinput"
 cat fold_data.tsv >> fold_data_with_headers.tsv 
 
