@@ -16,7 +16,7 @@ while read ID Sample Replicate Time Treatment End1 End2; do
 		-x tcongo_index \
 		-1 /localdisk/data/BPSM/AY21/fastq/$End1 \
 		-2 /localdisk/data/BPSM/AY21/fastq/$End2 \
-		-S $(pwd)/bowtie_alignments/$ID$Sample$Replicate$Time.sam &
+		-S $(pwd)/bowtie_alignments/${Sample}_${Replicate}_${Time}_${Treatment}.sam &
 		echo -e -n "\rAligned $count of $info_file_lines sample paired-end reads..." 
 	fi
 done < "$info_file"
