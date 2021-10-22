@@ -15,8 +15,8 @@ for file in $bowtie_sams*; do
 	samtools sort $bam_filename > $sort_filename
 	samtools index $sort_filename 
 done
-
+sorted_bams="$(pwd)/bam_files/"
 bedtools multicov \
-        -bams $sort_filename \
+        -bams $sorted_bams*.sorted.bam \
         -bed /localdisk/data/BPSM/AY21/TriTrypDB-46_TcongolenseIL3000_2019.bed \
-        > $count_filename
+        > all_sample_counts.tsv
