@@ -20,10 +20,11 @@ for group in $groups; do
 		done	
 	done
 done
-
+mkdir groupwise_counts
 for folder in $(pwd)/group_files/*; do
 	group=$(basename $folder)
 	echo -e "$group"
+	unset files_in_folder
 	for file in $folder/*; do
 		filename=$(basename $file)
 		filename="${filename//.tsv/_summary.tsv}"
@@ -34,7 +35,30 @@ for folder in $(pwd)/group_files/*; do
 			cat $file | cut -f6 > "$folder/${filename}"
 			
 		fi
-	ls -d group_files/$group/* | grep summary | xargs paste >> "${group}_final.tsv" 
-	done	
-	
+		files_in_folder=$((files_in_folder+1))
+	done		
+	#echo -e "$files_in_folder"
+	ls -d group_files/$group/* | grep summary | xargs paste >> group_files/${group}_final.tsv
+	#echo -e -n "Gene\tProtein\t" >> groupwise_counts/${group}.tsv
+	#for i in $(seq 1 $files_in_folder); do
+	#	echo -e "$i"
+ 	#	echo -e "$files_in_folder"
+	#	if [[ "$i" == "$files_in_folder" ]]; then
+	#		echo -e "${group}_replicant_$i" >> groupwise_counts/${group}.tsv
+	#	else
+	#		echo -e -n "${group}_replicant_$i\t" >> groupwise_counts/${group}.tsv
+	#	fi
+	#done
+	cat group_files/${group}_final.tsv >> groupwise_counts/${group}.tsv
 done
+rm -r -f group_files/
+
+for file in groupwise_counts/*; do
+	awk 'BEGIN {FS='\t'; OFS='\t'} 
+	     {
+	     sum = 0; 
+             for (i = 3; i <= NF; i++) 
+             sum += $i; 
+             sum /= NF;
+	     print sum}' $file
+done 
