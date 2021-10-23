@@ -54,11 +54,6 @@ done
 rm -r -f group_files/
 
 for file in groupwise_counts/*; do
-	awk 'BEGIN {FS='\t'; OFS='\t'} 
-	     {
-	     sum = 0; 
-             for (i = 3; i <= NF; i++) 
-             sum += $i; 
-             sum /= NF;
-	     print sum}' $file
+	awk -F'\t' '{OFS=FS} {sum=0;for (i=3; i<=NF; i++) sum += $i;sum /= (NF-2); print $0,sum}' $file > ${file}.means && mv ${file}.means $file
+	echo -e "$file"
 done 
