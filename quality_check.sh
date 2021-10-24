@@ -13,7 +13,7 @@ for file in $loop_dir*; do
 	fi
 done
 )
-echo "Read\tQuality Check\tStatus" > fastqc.warnings
+echo -e "Read\tQuality Check\tStatus" > fastqc.warnings
 for summary_file in fastqc_output/*/summary.txt; do
 		awk -F'\t' '{OFS=FS};
 		{
@@ -21,10 +21,12 @@ for summary_file in fastqc_output/*/summary.txt; do
                 {print $3, $2, $1}
                 }' $summary_file >> fastqc.warnings
 done
+(head -n 1 fastqc.warnings && tail -n +2 fastqc.warnings | sort -t$'\t' -k3) > fastqc.warnings.temp
+mv fastqc.warnings.temp fastqc.warnings
 num_warnings=$(cat fastqc.warnings|wc -l)
-# echo -e "\nFinished quality check of paired-end reads..."
+
 if [[ $num_warnings -gt 0 ]]; then
-	echo -e "**********\nWARNING - quality check discovered $num_warnings potential\n issues with read files"
+	echo -e "\n**********\nWARNING - quality check discovered $num_warnings potential issues with read files"
 	echo -e "Details of issues have been written to fastqc.warnings\n**********"
 	read -p "Continue with analysis? (y/n): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 	echo -e "Continuing..."
