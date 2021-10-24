@@ -46,10 +46,15 @@ for file in fold_changes/*; do
 	{
 	if(NR==1)
 	{$5 = "Expression Level Change (Induced/Uninduced)"}
-	else if ($4 == 0)
+	else if ($4 == 0 && $3 != 0)
 	{$5 = "Inf"}
+	else if ($4 == 0 && $3 == 0)
+	{$5 = 0}
 	else
 	{$5 = $3/$4}
-	print $0}' $file > ${file}.temp && mv ${file}.temp $file
+	print $0}' $file > ${file}.temp
+	(head -n 1 ${file}.temp && tail -n +2 ${file}.temp | sort -t$'\t' -k5 -nr) > $file
+	rm -f ${file}.temp
+	
 done
 # rm -r -f groupwise_counts/
