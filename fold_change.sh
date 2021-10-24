@@ -37,4 +37,19 @@ for group in $groups; do
 done
 
 rm -f *.id_cols
+
+# want $3/$4
+# $3 is induced
+# $4 is uninduced
+for file in fold_changes/*; do
+	awk -F'\t' '{OFS=FS};
+	{
+	if(NR==1)
+	{$5 = "Expression Level Change (Induced/Uninduced)"}
+	else if ($4 == 0)
+	{$5 = "Inf"}
+	else
+	{$5 = $3/$4}
+	print $0}' $file > ${file}.temp && mv ${file}.temp $file
+done
 # rm -r -f groupwise_counts/
