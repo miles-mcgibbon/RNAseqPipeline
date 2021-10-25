@@ -39,8 +39,6 @@ while read ID Sample Replicate Time Treatment End1 End2; do
 		-x tcongo_index \
 		-1 /localdisk/data/BPSM/AY21/fastq/$End1 \
 		-2 /localdisk/data/BPSM/AY21/fastq/$End2 \
-
-		# save output sam files with sample information as filename
 		-S $(pwd)/bowtie_alignments/${Sample}_${Replicate}_${Time}_${Treatment}.sam 2> bowtie_outputs/${Sample}_${Replicate}_${Time}_${Treatment}.txt &
 		count=$((count+1))
 		echo -e -n "\rAligning $count of $info_file_lines sample paired-end reads..." 
@@ -59,20 +57,20 @@ for output_file in bowtie_outputs/*; do
                 echo -e "CONTAMINANT WARNING - Reads for sample $sample_name have very poor alignment ($alignment%) and are likely a contaminant"  
                 read -p "Remove these reads from the analysis (y/n): " response
                 if [[ "$response" == "y" ]]; then
-                        rm -f /bowtie_alignments/${sample_name}.sam
+                        rm -f bowtie_alignments/${sample_name}.sam
                         echo -e "Removed ${sample_name}.sam from analysis"
                 elif [[ "$response" == "Y" ]]; then
-                        rm -f /bowtie_alignments/${sample_name}.sam
+                        rm -f bowtie_alignments/${sample_name}.sam
                         echo -e "Removed ${sample_name}.sam from analysis"
                 fi
         elif [[ "$numeric_alignment" -lt "80" ]]; then
                 echo -e "WARNING - Reads for sample $sample_name have poor alignment ($alignment%)"  
                 read -p "Remove these reads from the analysis (y/n): " response
                 if [[ "$response" == "y" ]]; then
-                        rm -f /bowtie_alignments/${sample_name}.sam
+                        rm -f bowtie_alignments/${sample_name}.sam
                         echo -e "Removed ${sample_name}.sam from analysis"
                 elif [[ "$response" == "Y" ]]; then
-                        rm -f /bowtie_alignments/${sample_name}.sam
+                        rm -f bowtie_alignments/${sample_name}.sam
                         echo -e "Removed ${sample_name}.sam from analysis"
                 fi
         fi
