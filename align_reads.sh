@@ -44,6 +44,10 @@ while read ID Sample Replicate Time Treatment End1 End2; do
 		echo -e -n "\rAligning $count of $info_file_lines sample paired-end reads..." 
 	fi
 done < "$info_file"
+
+# wait until multiprocessing jobs are finished
+sleep 1m
+
 echo -e "\nFinished alignment of all sample reads to reference genome..."
 
 # check for any poorly aligned files and remove them if user decides to
@@ -74,4 +78,5 @@ for output_file in bowtie_outputs/*; do
                         echo -e "Removed ${sample_name}.sam from analysis"
                 fi
         fi
-done 	
+done
+
