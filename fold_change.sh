@@ -1,10 +1,17 @@
+#!/bin/bash
 
+# get information on groups again from info file
+# this code will work if new groups and timepoints are added
 info_file=/localdisk/data/BPSM/AY21/fastq/100k.fqfiles
 groups=$(tail -n +2 $info_file | cut -f2 | sort -u )
 time_points=$(tail -n +2 $info_file | cut -f4 | sort -u )
 treatments=$(tail -n +2 $info_file | cut -f5 | sort -u )
+
+# make final output directory for fold change data
 mkdir fold_changes
 IFS=$'\n'
+
+# loop through the groups to combine mean gene count columns in one file for each group (Induced vs Uninduced)
 for group in $groups; do
         for time_point in $time_points; do
 		group_files=$(ls -d groupwise_counts/*| grep "${group}_$time_point")
@@ -38,9 +45,7 @@ done
 
 rm -f *.id_cols
 
-# want $3/$4
-# $3 is induced
-# $4 is uninduced
+# calculate fold change by dividing induced mean count by uninduced mean count
 for file in fold_changes/*; do
 	awk -F'\t' '{OFS=FS};
 	{
@@ -53,8 +58,9 @@ for file in fold_changes/*; do
 	else
 	{$5 = $3/$4}
 	print $0}' $file > ${file}.temp
+
+	# sort in decreasing order of fold change
 	(head -n 1 ${file}.temp && tail -n +2 ${file}.temp | sort -t$'\t' -k5 -nr) > $file
 	rm -f ${file}.temp
 	
 done
-# rm -r -f groupwise_counts/

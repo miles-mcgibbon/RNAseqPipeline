@@ -1,27 +1,53 @@
+#!/bin/bash
+
+# set delimiter and make output directories
 unset IFS
 IFS=$'\t'
 mkdir bowtie_alignments
 mkdir bowtie_outputs
-jobs=5
+
+# get user argument for number of threads
+while getopts t: flag
+do
+    case "${flag}" in
+        t) threads=${OPTARG};;
+    esac
+done
+
+# check threads argument has been supplied, if not default to one thread
+re='^[0-9]+$'
+if ! [[ $threads =~ $re ]] ; then
+        threads="1"
+fi
+
+jobs=$threads
+
+# define info file location and length
 unset count
 info_file=/localdisk/data/BPSM/AY21/fastq/100k.fqfiles
 info_file_lines=$(cat $info_file | grep 100k | wc -l)
+
+# loop through info file to extract read names and align them with the indexed reference genome using bowtie2
 while read ID Sample Replicate Time Treatment End1 End2; do
 	((i=i%jobs)); ((i++==0)) && wait
 	if [[ "$Sample" == "Sample" ]]; then
 		:
 	else
-		count=$((count+1))
 		bowtie2 \
-   		--threads 5 \
+   		--threads 1 \
 		-x tcongo_index \
 		-1 /localdisk/data/BPSM/AY21/fastq/$End1 \
 		-2 /localdisk/data/BPSM/AY21/fastq/$End2 \
+
+		# save output sam files with sample information as filename
 		-S $(pwd)/bowtie_alignments/${Sample}_${Replicate}_${Time}_${Treatment}.sam 2> bowtie_outputs/${Sample}_${Replicate}_${Time}_${Treatment}.txt &
-		echo -e -n "\rAligned $count of $info_file_lines sample paired-end reads..." 
+		count=$((count+1))
+		echo -e -n "\rAligning $count of $info_file_lines sample paired-end reads..." 
 	fi
 done < "$info_file"
 echo -e "\nFinished alignment of all sample reads to reference genome..."
+
+# check for any poorly aligned files and remove them if user decides to
 for output_file in bowtie_outputs/*; do
         sample_name=$(basename $output_file)
         sample_name="${sample_name//.txt/}"
