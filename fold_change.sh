@@ -78,3 +78,4 @@ for file in fold_changes/*; do
 	rm -f ${file}.temp
 	
 done
+echo -e "\nDone!"

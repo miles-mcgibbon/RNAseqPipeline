@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Calculating groupwise changes..."
+echo -e "\nCalculating groupwise changes and fold change data..."
 
 # get information on groups, time points and treatments from info file so
 # code will work with any future sample input
@@ -65,5 +65,4 @@ rm -r -f group_files/
 # mean starts at column three and goes to final column
 for file in groupwise_counts/*; do
 	awk -F'\t' '{OFS=FS} {sum=0;for (i=3; i<=NF; i++) sum += $i;sum /= (NF-2); print $0,sum}' $file > ${file}.means && mv ${file}.means $file
-	echo -e "$file"
 done 

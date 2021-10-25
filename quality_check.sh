@@ -35,6 +35,9 @@ for file in $loop_dir*; do
 done
 )
 
+# wait for multiprocessing to finish
+sleep 30s
+
 # create master file of warnings for the user sorted by severity
 echo -e "Read\tQuality Check\tStatus" > fastqc.warnings
 for summary_file in fastqc_output/*/summary.txt; do
