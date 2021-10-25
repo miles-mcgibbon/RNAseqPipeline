@@ -34,6 +34,7 @@ while read ID Sample Replicate Time Treatment End1 End2; do
 		:
 	else
 		bowtie2 \
+		--very-sensitive-local \
    		--threads 1 \
 		-x tcongo_index \
 		-1 /localdisk/data/BPSM/AY21/fastq/$End1 \

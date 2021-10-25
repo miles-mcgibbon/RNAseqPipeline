@@ -17,11 +17,20 @@ for group in $groups; do
 		group_files=$(ls -d groupwise_counts/*| grep "${group}_$time_point")
 		num_files=$(echo -e $group_files | awk -F'.tsv' '{print NF}')
                 count=0
+
+		# check if there are both induced and uninduced files for the group
+		# continue if there are
 		if [[ "$num_files" != "2" ]]; then
 			for file in $group_files; do
+				
+				# if this is the induced file, then add gene and protein names to final fold_change.tsv file
 				if [[ "$count" == "0" ]]; then
 					echo -e "Gene_Name\tProtein" > ${group}_${time_point}.id_cols
 			        	cut $file -d$'\t' -f1,2 >> ${group}_${time_point}.id_cols
+					
+					# then get the last column of the group counts sheet as this will be the mean
+					# this code works with any number of replicants for each group, as mean is always
+					# last column in these sheets
 					means_col=$(cat $file | rev | cut -f1 | rev)
 					sample_name="${file//.tsv/_mean}"
 					sample_name="${sample_name//groupwise_counts\//}"
@@ -30,6 +39,10 @@ for group in $groups; do
 					mv ${group}_${time_point}_fold_change.tsv.temp ${group}_${time_point}_fold_change.tsv
 					count=$((count+1))
 				else
+					
+					# for subsequent treatments get last column of the group counts sheet as this will be the mean
+                                        # this code works with any number of treatments for each group, as the mean columns will 
+					# just be appended as additional columns
 					means_col=$(cat $file | rev | cut -f1 | rev)
                                         sample_name="${file//.tsv/_mean}"
 					sample_name="${sample_name//groupwise_counts\//}"
@@ -47,12 +60,13 @@ rm -f *.id_cols
 
 # calculate fold change by dividing induced mean count by uninduced mean count
 for file in fold_changes/*; do
+	# awk code to calculate induced/uninduced fold change
 	awk -F'\t' '{OFS=FS};
 	{
 	if(NR==1)
 	{$5 = "Expression Level Change (Induced/Uninduced)"}
 	else if ($4 == 0 && $3 != 0)
-	{$5 = "Inf"}
+	{$5 = 10000}
 	else if ($4 == 0 && $3 == 0)
 	{$5 = 0}
 	else

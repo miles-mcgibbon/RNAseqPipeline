@@ -21,13 +21,19 @@ for file in $bowtie_sams*; do
 	count_filename="${count_filename//bam_files/gene_counts}"
 	echo -e -n "\rProcessing file $count of $total_files: $(basename $file)"
 
-	# convert sam files to sorted indexed bam files
-	samtools view -S -b $file > $bam_filename 
+	# convert sam to bam
+	samtools view -S -b $file > $bam_filename
+
+	# sort the bam file
 	samtools sort $bam_filename > $sort_filename
+
+	# create bam.bai index for sorted file
 	samtools index $sort_filename 
 
 	# generate gene counts for sorted bam file
 	bedtools multicov \
+	-F \
+ 	-f 0.5 \
         -bams $sort_filename \
         -bed /localdisk/data/BPSM/AY21/TriTrypDB-46_TcongolenseIL3000_2019.bed \
         > $count_filename
